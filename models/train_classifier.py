@@ -22,6 +22,18 @@ from sklearn.model_selection import GridSearchCV
 
 
 def load_data(database_filepath):
+    """
+    Loads the processed dataset from an SQL database
+    
+    args:
+        database_filepath: file path to the database
+        
+    return:
+        X: the messages received during the disaster events
+        Y: the categories/labels of the messages
+        category_names: the names of each category to be predicted       
+    """
+    
     # Create a new Engine instance
     engine = create_engine('sqlite:///'+ database_filepath)
     
@@ -39,6 +51,20 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """
+    Splits the entire messages received during the 
+    disaster event into smaller units, such as individual 
+    words or terms.
+    It removes punctuation characters and convert the text
+    to lowercases, finally removing all non-meaningful stopwords.
+    
+    args:
+        text: (string) the received disaster messages
+        
+    return:
+        lemmatized_tokens: tokenized list of messages
+    
+    """
     # Remove punctuation characters and convert text to lowercase
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
     
@@ -56,6 +82,37 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Builds a model by wrapping the following in a pipeline object;
+    CountVectorizer: which transforms a given text into a vector 
+                     on the basis of the frequency (count) of each 
+                     word that occurs in the entire text.
+    TfidfTransformer: transforms a count matrix from the CountVectorizer 
+                      to a normalized tf or tf-idf representation.
+                      tf: term frequency
+                      idf: inverse document frequency.
+                      The goal of using tf-idf instead of the raw frequencies 
+                      of occurrence of a token in a given document is to scale 
+                      down the impact of tokens that occur very frequently in a 
+                      given corpus and that are hence empirically less informative 
+                      than features that occur in a small fraction of the training corpus.
+                      It takes the tokenizer function as input.
+    MultiOutputClassifier: used to extend classifiers that do not natively support the 
+                           multi-target classification problem. It is achieved by fitting
+                           one classifier per target/class.
+    RandomForestClassifier: creates decision trees on randomly selected data samples, 
+                            gets prediction from each tree and selects the best solution 
+                            by means of voting.
+    GridSearchCV: performs an exhaustive search over specified hyperparameter values (eg.
+                  a parameter dictionary) for an esimator, by fitting and performing prediction
+                  using cross-validation method. The hyperparameter values with best performance
+                  are chosen for the final model.
+      
+    return:
+        grid_search: an object to be used to search for optimal values for the given model
+  
+    
+    """
     # Create data pipeline
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
@@ -77,6 +134,29 @@ def build_model():
 
 
 def train(X, Y, model, category_names):
+    """
+    Fits the specified model/estimator to the training
+    data, and performs and outputs evaluation results of the 
+    trained model on the test data.
+    The evaluation results are as follows:
+        Accuracy: proportion of true results among the total 
+                  number of cases examined. 
+        Precision: proportion of predicted positives are truely
+                   positive
+        Recall:  proportion of actual positives that are correctly
+                 classified
+        F1-score: measure of a model's acuracy as a weighted average
+                  between the precision and recall.
+    
+    args:
+        X: the predictor/features/messages 
+        Y: the target/labels of the categories
+        category_names: list of message categories
+        
+    return:
+        model: trained model
+    
+    """
     # train test split
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
 
@@ -91,16 +171,26 @@ def train(X, Y, model, category_names):
     return model
 
 
-def evaluate_model(model, X_test, y_test, category_names):  
+def evaluate_model(model, X_test, Y_test, category_names):  
+    """
+    Returns evaluation results of the trained model on 
+    the test datasets.
+    
+    args:
+        model: the specified trained model
+        X_test: test set of the messages
+        Y_test: test set of the target/labels of the messages
+        category_names: the names of each category to be predicted       
+    """
     
     # predict on test data
-    y_pred = model.predict(X_test)
+    Y_pred = model.predict(X_test)
     
     for i in range(len(category_names)):
-        accuracy = accuracy_score(y_test.iloc[:, i].values, y_pred[:, i])
+        accuracy = accuracy_score(Y_test.iloc[:, i].values, Y_pred[:, i])
         print('Category: {} '.format(category_names[i]))
         print('Accuracy: {}%\n'.format(int(round(100*accuracy,0))))
-        print(classification_report(y_test.iloc[:, i].values, y_pred[:, i]))
+        print(classification_report(Y_test.iloc[:, i].values, Y_pred[:, i]))
         print("====================================================")
 
 
