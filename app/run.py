@@ -25,7 +25,6 @@ def tokenize(text):
 
     return clean_tokens
 
-
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterMessages', engine)
@@ -39,20 +38,26 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/index')
 def index():
     
+    # To plot the count of messages per genre
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
-    category_column_name = df.columns[4:]
-    df_new = df.melt(id_vars='message', value_vars=category_column_name)
+    # To plot the percentage of the mean message categories per category
+    category_names = df.columns[4:].tolist()
+    df_new = df.melt(id_vars='message', value_vars=category_names)
     df_new.columns = ['message', 'category', 'response']
     category_mean = df_new.groupby('category')['response'].mean()
     category_precent_mean = round(100*category_mean,0).values.astype(int)
-    category_names = list(category_mean.index)
     
-   
+    # To plot the percentage of the mean messages categories per genre
+    df_genre = df.melt(id_vars='genre', value_vars=category_names)
+    df_genre.columns = ['genre', 'category', 'values']
+    df_genre_mean = df_genre.groupby(['genre'])['values'].mean().reset_index(name='mean_value')
+    
+    
     graphs = [
         {
-            'data': [
+          'data': [
                 Bar(
                     x=category_names,
                     y=category_precent_mean
@@ -60,12 +65,30 @@ def index():
             ],
 
             'layout': {
-                'title': 'Percentage Distribution of Disaster Message Categories',
+                'title': 'Percentage Distribution of Disaster Message Categories per Category',
                 'yaxis': {
                     'title': "Percentage Mean (%)"
                 },
                 'xaxis': {
                     'title': "Message Category"
+                }
+            }
+        },
+       {
+          'data': [
+                Bar(
+                    x=df_genre_mean['genre'].values,
+                    y=df_genre_mean['mean_value'].values
+                )
+            ],
+
+            'layout': {
+                'title': 'Proportion of Disaster Message Categories per Genre',
+                'yaxis': {
+                    'title': "Proportion"
+                },
+                'xaxis': {
+                    'title': "Genre"
                 }
             }
         },
