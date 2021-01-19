@@ -60,6 +60,7 @@ Screenshot showing a message to be classified. In this case, the message is `'Th
 ![alt text](https://github.com/ikennanwosu/Disaster_Response_Pipeline/blob/master/images/results_1.JPG)
 
 When the Classify Message button is clicked, the app displays the predicted classification/category(ies) for the message. In the case, the predicted categories are `Related`, `Aid Related`, `Weather Related` and `Earthquake`.
+
 ![alt text](https://github.com/ikennanwosu/Disaster_Response_Pipeline/blob/master/images/results_2.JPG)
 ![alt text](https://github.com/ikennanwosu/Disaster_Response_Pipeline/blob/master/images/results_3.JPG)
 
