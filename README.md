@@ -35,7 +35,7 @@ Most of the code in this project will run with the Anaconda distribution of Pyth
 - cd to Project directory
 - [create and activate a virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 - pip install -r requirements.txt
-
+Then follow the steps in the next section.
 
 ## Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
