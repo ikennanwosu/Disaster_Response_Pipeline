@@ -5,6 +5,21 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    Reads in the datasets disaster_messages.csv and 
+    disaster_categories.csv for the ETL process. 
+    The disaster_messages.csv file contains the messages 
+    sent during disaster events, while the disaster_categories.csv
+    file contains the categories to which each message belongs.    
+    
+    args:
+        messages_filepath: path to the disaster_messages.csv file
+        categories_filepath: path  to the disaster_categories.csv file
+    
+    return:
+        a merged dataset of both csv files
+    
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     
@@ -12,6 +27,22 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    Performs data cleaning and transformation of the 
+    loaded and merged disaster messaages.
+    
+    The steps undertaken were splitting the category entires 
+    into text and integers; where the text indicate the 
+    category of the messages received and the integer/labels (0, 1) 
+    indicate whether or not each message relates to a category or not.
+    
+    args:
+        df: (dataframe) the messages sent during the disasters events
+    
+    return:
+        cleaned and transformed dataset
+    
+    """
     # create a dataframe of the 36 individual category columns
     categories = df.categories.str.split(';', expand=True)
     
@@ -47,17 +78,29 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """
+    Saves the clean and transformed data to
+    an SQL database.
+    
+    args:
+        df: (dataframe) the cleaned and transformed dataset    
+    """
+    
     # create an SQLAlchemy engine object
     engine = create_engine('sqlite:///' + database_filename)
     
-#     sql.execute('DROP TABLE IF EXISTS %s'%DisasterMessages, engine)
-#     sql.execute('VACUUM', engine)
+    #     sql.execute('DROP TABLE IF EXISTS %s'%DisasterMessages, engine)
+    #     sql.execute('VACUUM', engine)
     
     # write the records stored in the dataframe `df` to an SQL table
     df.to_sql('DisasterMessages', engine, index=False)
 
 
 def main():
+    """
+    Performs the entire ETL process - Load, Extract and Saves the data
+
+    """
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
