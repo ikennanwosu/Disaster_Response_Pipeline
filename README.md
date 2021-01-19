@@ -35,7 +35,7 @@ Most of the code in this project will run with the Anaconda distribution of Pyth
 - cd to Project directory
 - [create and activate a virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 - pip install -r requirements.txt
-
+Then follow the steps in the next section.
 
 ## Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
@@ -60,6 +60,7 @@ Screenshot showing a message to be classified. In this case, the message is `'Th
 ![alt text](https://github.com/ikennanwosu/Disaster_Response_Pipeline/blob/master/images/results_1.JPG)
 
 When the Classify Message button is clicked, the app displays the predicted classification/category(ies) for the message. In the case, the predicted categories are `Related`, `Aid Related`, `Weather Related` and `Earthquake`.
+
 ![alt text](https://github.com/ikennanwosu/Disaster_Response_Pipeline/blob/master/images/results_2.JPG)
 ![alt text](https://github.com/ikennanwosu/Disaster_Response_Pipeline/blob/master/images/results_3.JPG)
 
